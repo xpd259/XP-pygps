@@ -1,20 +1,27 @@
+import time
+
 import gpxpy
 import gpxpy.gpx
 from XPLMDataAccess import *
 from XPLMDefs import *
+from XPLMDisplay import *
+from XPLMGraphics import *
 from XPLMPlugin import *
 from XPLMProcessing import *
 from XPLMUtilities import *
+from XPWidgetDefs import *
+
 
 class PythonInterface:
     def XPluginStart(self):
         global gOutputFile, gPlaneLat, gPlaneLon, gPlaneEl, gpx, gpx_track, gpx_segment
-        self.Name = "Flight tracer XP-pygps"
-        self.Sig = "Dick-Thomas.Python.X-Plane-Flight-Tracker"
+        self.Name = "Flight tracer"
+        self.Sig = "DickThomas.XPGPS"
         self.Desc = "Tracks Flight to a GPX file"
+        dateNow = time.strftime("%Y%m%d-%H%M%S")
 
+        # Create first track in our GPX
         gpx = gpxpy.gpx.GPX()
-        # Create first track in our GPX:
         gpx_track = gpxpy.gpx.GPXTrack()
         gpx.tracks.append(gpx_track)
 
@@ -23,29 +30,24 @@ class PythonInterface:
         gpx_track.segments.append(gpx_segment)
 
         ## open a file and write to it
-        self.outputPath = XPLMGetSystemPath() + "flightsim.gpx"
+        self.outputPath = XPLMGetSystemPath() + "flightsim-" + dateNow + ".gpx"
         self.OutputFile = open(self.outputPath, 'w')
 
-        ## find the data refs we are seeking
+        """find the data refs we want to record"""
         self.PlaneLat = XPLMFindDataRef("sim/flightmodel/position/latitude")
         self.PlaneLon = XPLMFindDataRef("sim/flightmodel/position/longitude")
         self.PlaneEl = XPLMFindDataRef("sim/flightmodel/position/elevation")
 
-        """
-        Register our callback for every 5 seconds  Positive intervals
-        are in seconds, negative are the negative of sim frames.  Zero
-        registers but does not schedule a callback for time.
-        """
+
         self.FlightLoopCB = self.FlightLoopCallback
         XPLMRegisterFlightLoopCallback(self, self.FlightLoopCB, 5.0, 0)
         return self.Name, self.Sig, self.Desc
 
-
     def XPluginStop(self):
         XPLMUnregisterFlightLoopCallback(self, self.FlightLoopCB, 0)
-
         self.OutputFile.write(gpx.to_xml())
         self.OutputFile.close()
+
         pass
 
     def XPluginEnable(self):
@@ -64,9 +66,9 @@ class PythonInterface:
 
         lat = XPLMGetDataf(self.PlaneLat)
         lon = XPLMGetDataf(self.PlaneLon)
-        el =  XPLMGetDataf(self.planeEl)
+        el = XPLMGetDataf(self.PlaneEl)
+
         """Write data to memory"""
         gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon, el))
-
         """return in 5.0 seconds"""
         return 5.0
