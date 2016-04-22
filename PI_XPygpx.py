@@ -9,9 +9,10 @@ from XPLMUtilities import *
 class PythonInterface:
     def XPluginStart(self):
         global gOutputFile, gPlaneLat, gPlaneLon, gPlaneEl, gpx, gpx_track, gpx_segment
-        self.Name = "Flight tracer"
+        self.Name = "Flight tracer XP-pygps"
         self.Sig = "Dick-Thomas.Python.X-Plane-Flight-Tracker"
         self.Desc = "Tracks Flight to a GPX file"
+
         gpx = gpxpy.gpx.GPX()
         # Create first track in our GPX:
         gpx_track = gpxpy.gpx.GPXTrack()
@@ -25,11 +26,10 @@ class PythonInterface:
         self.outputPath = XPLMGetSystemPath() + "flightsim.gpx"
         self.OutputFile = open(self.outputPath, 'w')
 
-        """find the data refs we want to record"""
+        ## find the data refs we are seeking
         self.PlaneLat = XPLMFindDataRef("sim/flightmodel/position/latitude")
         self.PlaneLon = XPLMFindDataRef("sim/flightmodel/position/longitude")
         self.PlaneEl = XPLMFindDataRef("sim/flightmodel/position/elevation")
-
 
         """
         Register our callback for every 5 seconds  Positive intervals
@@ -46,7 +46,6 @@ class PythonInterface:
 
         self.OutputFile.write(gpx.to_xml())
         self.OutputFile.close()
-
         pass
 
     def XPluginEnable(self):
@@ -70,6 +69,4 @@ class PythonInterface:
         gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon, el))
 
         """return in 5.0 seconds"""
-        return 5.0;
-
-
+        return 5.0
