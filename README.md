@@ -10,4 +10,4 @@ tested on Debian Jessie
 X-Plane 10.45 (steam edition)
 
 
-[screen shot of output loaded in to marple-qt](snapshot45.png)
+[screen shot of output loaded in to marple-qt] (snapshot45.png)
