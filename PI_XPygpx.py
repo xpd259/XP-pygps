@@ -40,7 +40,7 @@ class PythonInterface:
 
 
         self.FlightLoopCB = self.FlightLoopCallback
-        XPLMRegisterFlightLoopCallback(self, self.FlightLoopCB, 5.0, 0)
+        XPLMRegisterFlightLoopCallback(self, self.FlightLoopCB, 120.0, 0)
         return self.Name, self.Sig, self.Desc
 
     def XPluginStop(self):
@@ -70,5 +70,5 @@ class PythonInterface:
 
         """Write data to memory"""
         gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon, el))
-        """return in 5.0 seconds"""
-        return 5.0
+        """return in 120.0 seconds"""
+        return 120.0
